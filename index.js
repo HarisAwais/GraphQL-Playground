@@ -1,11 +1,13 @@
 // index.js
-const { ApolloServer } = require('apollo-server');
+const express = require('express');
+const { ApolloServer } = require('apollo-server-express');
 const mongoose = require('mongoose');
 const typeDefs = require('./api/graphql/typeDefs');
 const resolvers = require('./api/graphql/resolver');
 
 mongoose.connect('mongodb://localhost:27017/graphql', { useNewUrlParser: true, useUnifiedTopology: true });
 
+const app = express();
 const server = new ApolloServer({
   typeDefs,
   resolvers,
@@ -23,8 +25,13 @@ const server = new ApolloServer({
   },
 });
 
-// Start the server
-const PORT = process.env.PORT || 4000;
-server.listen(PORT).then(({ url }) => {
-  console.log(`🚀 Server ready at ${url}`);
-});
+(async () => {
+  await server.start();
+  server.applyMiddleware({ app });
+
+  const PORT = process.env.PORT || 4000;
+
+  app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}${server.graphqlPath}`);
+  });
+})();
