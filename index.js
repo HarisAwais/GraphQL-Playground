@@ -5,8 +5,10 @@ const mongoose = require('mongoose');
 const typeDefs = require('./api/graphql/typeDefs');
 const resolvers = require('./api/graphql/resolver');
 
+//setup for mongoose
 mongoose.connect('mongodb://localhost:27017/graphql', { useNewUrlParser: true, useUnifiedTopology: true });
 
+//setup for express
 const app = express();
 const server = new ApolloServer({
   typeDefs,
@@ -25,6 +27,7 @@ const server = new ApolloServer({
   },
 });
 
+//start the server
 (async () => {
   await server.start();
   server.applyMiddleware({ app });
